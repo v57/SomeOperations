@@ -61,7 +61,7 @@ class Queue: Operation {
     resume()
   }
 }
-typealias QueueCompletion = ()->()
+typealias QueueCompletion = (Error?)->()
 class CompletionQueue: Queue {
   let completion: QueueCompletion
   init(completion: @escaping QueueCompletion) {
@@ -82,6 +82,9 @@ class Operation {
   }
   func cancel() {
     
+  }
+  func failed(error: Error) {
+    queue?.failed(error: error)
   }
 }
 
