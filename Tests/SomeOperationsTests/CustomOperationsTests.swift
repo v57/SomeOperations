@@ -11,8 +11,6 @@ final class CustomOperationsTests: XCTestCase {
   ]
 }
 
-class ConnectOperation: Operation {
-  
 enum ConnectionError: Error {
   case lostConnection, noData
 }
@@ -72,4 +70,24 @@ class NetworkOperation: SomeOperation {
   }
   var connection: Connection { networkQueue.connection }
 }
+class ConnectOperation: NetworkOperation {
+  override func run() {
+    if connection.isConnected {
+      self.queue.removeCurrent()
+      self.queue.retry()
+    } else {
+      connection.connect { result in
+        self.queue.removeCurrent()
+        switch result {
+        case .success:
+          self.queue.retry()
+        case .failure(let error):
+          self.queue.failed(error: error)
+        }
+      }
+    }
+  }
 }
+
+}
+
