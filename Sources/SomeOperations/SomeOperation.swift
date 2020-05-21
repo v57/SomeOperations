@@ -24,18 +24,17 @@ class SomeOperation {
   class Queue: Hashable {
     var index = 0
     let operations: [SomeOperation]
-    let completion: (Status, Action) -> ()
-    init(index: Int, completion: @escaping (Status, Action) -> ()) {
+    let completion: (Queue, Status, Action) -> ()
+    init(operations: [SomeOperation], completion: @escaping (Queue, Status, Action) -> ()) {
       self.operations = operations
       self.completion = completion
     }
-    func start() -> Self {
+    func resume() {
       next()
-      return self
     }
     func next() {
       guard index < operations.count else {
-        done()
+        done(status: .done, action: .next)
         return
       }
       operations[index].run(completion: process)
@@ -49,12 +48,13 @@ class SomeOperation {
           next()
         }
         next()
-      case .failed(let error):
+      case .failed:
         done(status: status, action: action)
       }
     }
     func done(status: Status, action: Action) {
-      completion(status, action)
+      completion(self, status, action)
+    }
     func hash(into hasher: inout Hasher) {
       ObjectIdentifier(self).hash(into: &hasher)
     }
