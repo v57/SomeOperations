@@ -2,7 +2,7 @@ import XCTest
 @testable import SomeOperations
 
 final class SomeOperationsTests: XCTestCase {
-  func testSingleSyncOperation() {
+  func testSyncOperation() {
     var result = 0
     let operation = SomeOperation.run {
       result = 1
@@ -37,7 +37,7 @@ final class SomeOperationsTests: XCTestCase {
   }
   
   static var allTests = [
-    ("testSingleSyncOperation", testSingleSyncOperation),
+    ("testSyncOperation", testSyncOperation),
     ("testSyncOperations", testSyncOperations),
   ]
 }
