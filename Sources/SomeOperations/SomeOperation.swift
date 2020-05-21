@@ -19,14 +19,24 @@ class SomeOperation {
   func run(completion: @escaping (Status, Action)->()) {
     completion(.done, .next)
   }
+  func cancel() {
+    queues.forEach { $0.cancel() }
+  }
   class Queue: Hashable {
     var index = 0
     let operations: [SomeOperation]
     let completion: (Queue, Status, Action) -> ()
     var state: State = .idle
+    var current: SomeOperation? {
+      index < operations.count ? operations[index] : nil
+    }
     init(operations: [SomeOperation], completion: @escaping (Queue, Status, Action) -> ()) {
       self.operations = operations
       self.completion = completion
+    }
+    func cancel() {
+      state = .done(.cancelled)
+      current?.cancel()
     }
     func resume() {
       state = .running
@@ -37,6 +47,7 @@ class SomeOperation {
         done(status: .done, action: .next)
         return
       }
+      guard state != .done(.cancelled) else { return }
       operations[index].run(completion: process)
     }
     func process(status: Status, action: Action) {
