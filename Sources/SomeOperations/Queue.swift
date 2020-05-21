@@ -73,6 +73,15 @@ class CompletionQueue: Queue {
   init(completion: @escaping QueueCompletion) {
     self.completion = completion
   }
+  override func cancel() {
+    completion(nil)
+  }
+  override func done() {
+    completion(nil)
+  }
+  override func failed(error: Error) {
+    completion(error)
+  }
 }
 class SomeOperation {
   weak var queue: Queue!
