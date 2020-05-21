@@ -55,16 +55,23 @@ extension SomeOperation {
     let time: TimeInterval
     let queue: DispatchQueue
     let action: ()->(Status, Action)
+    var isCancelled = false
     init(time: TimeInterval, queue: DispatchQueue, run: @escaping ()->(Status, Action)) {
       self.time = time
       self.queue = queue
       self.action = run
     }
     override func run(completion: @escaping (Status, Action) -> ()) {
+      isCancelled = false
       queue.asyncAfter(wallDeadline: .now() + time) {
-        let (status, action) = self.action()
-        completion(status, action)
+        if !self.isCancelled {
+          let (status, action) = self.action()
+          completion(status, action)
+        }
       }
+    }
+    override func cancel() {
+      isCancelled = true
     }
   }
   class Run: SomeOperation {
