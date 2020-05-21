@@ -19,11 +19,13 @@ class Connection {
   var lastSent: String?
   func connect(_ completion: @escaping (Result<Void, ConnectionError>)->()) {
     "ConnectQueue".queue.asyncAfter(deadline: .now() + 0.1) {
+      self.isConnected = true
       completion(.success(()))
     }
   }
   func connectFailed(_ completion: @escaping (Result<Void, ConnectionError>)->()) {
     "ConnectQueue".queue.asyncAfter(deadline: .now() + 0.1) {
+      self.isConnected = false
       completion(.failure(.lostConnection))
     }
   }
@@ -35,6 +37,7 @@ class Connection {
   }
   func sendFailed(_ some: String, completion: @escaping (Result<Void, ConnectionError>)->()) {
     "ConnectQueue".queue.asyncAfter(deadline: .now() + 0.1) {
+      self.isConnected = false
       completion(.failure(.lostConnection))
     }
   }
@@ -50,6 +53,7 @@ class Connection {
   }
   func readFailed(_ completion: @escaping (Result<String, ConnectionError>)->()) {
     "ConnectQueue".queue.asyncAfter(deadline: .now() + 0.1) {
+      self.isConnected = false
       completion(.failure(.lostConnection))
     }
   }
