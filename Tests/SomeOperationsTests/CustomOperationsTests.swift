@@ -88,6 +88,9 @@ class NetworkQueue: Queue {
   init(connection: Connection) {
     self.connection = connection
   }
+  func request(send: String, response: @escaping (String)->()) {
+    add(Request(connection: connection, send: send, response: response))
+  }
 }
 class NetworkOperation: SomeOperation {
   var networkQueue: NetworkQueue {
