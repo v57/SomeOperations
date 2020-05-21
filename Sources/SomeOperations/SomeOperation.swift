@@ -21,7 +21,7 @@ class SomeOperation {
     state = .completed
     completion(.done, .next)
   }
-  class Queue {
+  class Queue: Hashable {
     var index = 0
     let operations: [SomeOperation]
     let completion: (Status, Action) -> ()
@@ -55,6 +55,11 @@ class SomeOperation {
     }
     func done(status: Status, action: Action) {
       completion(status, action)
+    func hash(into hasher: inout Hasher) {
+      ObjectIdentifier(self).hash(into: &hasher)
+    }
+    static func ==(l: Queue, r: Queue) -> Bool {
+      return l === r
     }
   }
 }
