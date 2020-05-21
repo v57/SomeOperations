@@ -39,4 +39,14 @@ extension SomeOperation {
       }
     }
   }
+  class Run: SomeOperation {
+    let action: ()->(Status, Action)
+    init(run: @escaping ()->(Status, Action)) {
+      self.action = run
+    }
+    override func run(completion: @escaping (Status, Action) -> ()) {
+      let (status, action) = self.action()
+      completion(status, action)
+    }
+  }
 }
