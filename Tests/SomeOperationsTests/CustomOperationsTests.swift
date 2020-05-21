@@ -62,4 +62,14 @@ class NetworkQueue: Queue {
     self.connection = connection
   }
 }
+class NetworkOperation: SomeOperation {
+  var networkQueue: NetworkQueue {
+    if let queue = queue as? NetworkQueue {
+      return queue
+    } else {
+      fatalError("Network operations should run from network queue")
+    }
+  }
+  var connection: Connection { networkQueue.connection }
+}
 }
