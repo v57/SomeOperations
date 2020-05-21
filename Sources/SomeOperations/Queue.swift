@@ -11,6 +11,9 @@ class Queue: Operation {
   var index: Int = 0
   var operations = [Operation]()
   var removeCompletedOperations = false
+  override var totalOperations: Int {
+    operations.reduce(0, { $0 + $1.totalOperations })
+  }
   var current: Operation? {
     index < operations.count ? operations[index] : nil
   }
@@ -67,6 +70,7 @@ class CompletionQueue: Queue {
 }
 class Operation {
   weak var queue: Queue!
+  var totalOperations: Int { 1 }
   func run(completion: @escaping QueueCompletion) -> CompletionQueue {
     let queue = CompletionQueue(completion: completion)
     self.queue = queue
