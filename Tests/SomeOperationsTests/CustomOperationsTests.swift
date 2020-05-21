@@ -38,6 +38,30 @@ final class CustomOperationsTests: XCTestCase {
     XCTAssertEqual(connection.operationsCalled, 3)
   }
   
+  func testMultipleRequests() {
+    var responsesReceived = 0
+    let connection = Connection()
+    let network = NetworkQueue(connection: connection)
+    network.request(send: "hello") { response in
+      responsesReceived += 1
+      XCTAssertEqual(response, "hello")
+    }
+    network.request(send: "hello2") { response in
+      responsesReceived += 1
+      XCTAssertEqual(response, "hello2")
+    }
+    network.request(send: "hello3") { response in
+      responsesReceived += 1
+      XCTAssertEqual(response, "hello3")
+    }
+    network.runWait { error in
+      XCTAssertNil(error)
+    }.resume()
+    XCTAssertTrue(connection.isConnected)
+    XCTAssertEqual(responsesReceived, 3)
+    XCTAssertEqual(connection.operationsCalled, 7)
+  }
+  
   static var allTests = [
     ("testConnectOperation", testConnectOperation),
     ("testConnectFailedOperation", testConnectFailedOperation),
