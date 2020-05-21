@@ -26,6 +26,7 @@ open class CompletionQueue: SomeOperationQueue {
 open class SomeOperation {
   open weak var queue: SomeOperationQueue!
   open var totalOperations: Int { 1 }
+  public init() {}
   open func run(completion: @escaping QueueCompletion) -> CompletionQueue {
     let queue = CompletionQueue(completion: completion)
     queue.add(self)
