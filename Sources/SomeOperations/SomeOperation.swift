@@ -15,7 +15,6 @@ class SomeOperation {
   enum State {
     case idle, running, done(Status)
   }
-  var state: State = .idle
   var queues = Set<Queue>()
   func run(completion: @escaping (Status, Action)->()) {
     completion(.done, .next)
