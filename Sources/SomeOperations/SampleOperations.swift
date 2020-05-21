@@ -16,7 +16,7 @@ extension SomeOperation {
     Run(run: run)
   }
   static func async(on queue: DispatchQueue = defaultQueue, run: @escaping ()->()) -> SomeOperation {
-    asyncWithResult(run: defaultResult(for: run))
+    asyncWithResult(on: queue, run: defaultResult(for: run))
   }
   static func asyncWithResult(on queue: DispatchQueue = defaultQueue, run: @escaping ()->(Status, Action)) -> SomeOperation {
     RunAsync(queue: queue, run: run)
