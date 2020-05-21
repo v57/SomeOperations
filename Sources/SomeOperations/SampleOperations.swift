@@ -8,14 +8,21 @@
 import Foundation
 
 extension SomeOperation {
-  class Async: SomeOperation {
+  static var defaultQueue: DispatchQueue = .main
+  static func asyncWithResult(on queue: DispatchQueue = defaultQueue, run: @escaping ()->(Status, Action)) -> SomeOperation {
+    RunAsync(queue: queue, run: run)
+  }
+}
+
+extension SomeOperation {
+  class RunAsync: SomeOperation {
     let queue: DispatchQueue
-    let action: ()->(SomeOperation.Status, SomeOperation.Action)
-    init(queue: DispatchQueue, run: @escaping ()->(SomeOperation.Status, SomeOperation.Action)) {
+    let action: ()->(Status, Action)
+    init(queue: DispatchQueue, run: @escaping ()->(Status, Action)) {
       self.queue = queue
       self.action = run
     }
-    override func run(completion: @escaping (SomeOperation.Status, SomeOperation.Action) -> ()) {
+    override func run(completion: @escaping (Status, Action) -> ()) {
       queue.async {
         let (status, action) = self.action()
         completion(status, action)
