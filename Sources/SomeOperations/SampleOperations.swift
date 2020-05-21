@@ -45,6 +45,22 @@ extension SomeOperation {
       }
     }
   }
+  class RunWait: SomeOperation {
+    let time: TimeInterval
+    let queue: DispatchQueue
+    let action: ()->(Status, Action)
+    init(time: TimeInterval, queue: DispatchQueue, run: @escaping ()->(Status, Action)) {
+      self.time = time
+      self.queue = queue
+      self.action = run
+    }
+    override func run(completion: @escaping (Status, Action) -> ()) {
+      queue.asyncAfter(wallDeadline: .now() + time) {
+        let (status, action) = self.action()
+        completion(status, action)
+      }
+    }
+  }
   class Run: SomeOperation {
     let action: ()->(Status, Action)
     init(run: @escaping ()->(Status, Action)) {
