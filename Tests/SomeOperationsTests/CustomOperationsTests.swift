@@ -3,7 +3,13 @@ import XCTest
 
 final class CustomOperationsTests: XCTestCase {
   func testConnectOperation() {
-    
+    let connection = Connection()
+    let network = NetworkQueue(connection: connection)
+    network.add(ConnectOperation())
+    network.runWait { error in
+      XCTAssertNil(error)
+    }.resume()
+    XCTAssertTrue(connection.isConnected)
   }
   
   static var allTests = [
