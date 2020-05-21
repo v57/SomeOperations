@@ -22,6 +22,21 @@ final class CustomOperationsTests: XCTestCase {
     XCTAssertFalse(connection.isConnected)
     XCTAssertEqual(connection.operationsCalled, 1)
   }
+  func testRequest() {
+    var responseReceived = false
+    let connection = Connection()
+    let network = NetworkQueue(connection: connection)
+    network.request(send: "hello") { response in
+      responseReceived = true
+      XCTAssertEqual(response, "hello")
+    }
+    network.runWait { error in
+      XCTAssertNil(error)
+    }.resume()
+    XCTAssertTrue(responseReceived)
+    XCTAssertTrue(connection.isConnected)
+    XCTAssertEqual(connection.operationsCalled, 3)
+  }
   
   static var allTests = [
     ("testConnectOperation", testConnectOperation),
