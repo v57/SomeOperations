@@ -35,9 +35,31 @@ final class SomeOperationsTests: XCTestCase {
     }
     XCTAssertEqual(result, 3)
   }
+  func testAsyncOperation() {
+    var result = 0
+    let semaphone = DispatchSemaphore(value: 0)
+    let operation = SomeOperation.async(on: "testAsyncOperation".queue) {
+      result = 1
+      semaphone.signal()
+    }
+    XCTAssertEqual(result, 0)
+    operation.run { status, action in
+      XCTAssertEqual(status, .done)
+      XCTAssertEqual(action, .next)
+    }
+    semaphone.wait()
+    XCTAssertEqual(result, 1)
+  }
   
   static var allTests = [
     ("testSyncOperation", testSyncOperation),
     ("testSyncOperations", testSyncOperations),
+    ("testAsyncOperation", testAsyncOperation),
   ]
+}
+
+extension String {
+  var queue: DispatchQueue {
+    DispatchQueue(label: self)
+  }
 }
