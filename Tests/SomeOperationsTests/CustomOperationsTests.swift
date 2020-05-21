@@ -56,4 +56,10 @@ class Connection {
     }
   }
 }
+class NetworkQueue: Queue {
+  var connection: Connection
+  init(connection: Connection) {
+    self.connection = connection
+  }
+}
 }
