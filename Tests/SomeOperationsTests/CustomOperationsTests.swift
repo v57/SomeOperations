@@ -99,6 +99,19 @@ class NetworkOperation: SomeOperation {
   }
   var connection: Connection { networkQueue.connection }
 }
+
+class Request: NetworkQueue {
+  let send: String
+  let completion: (String) -> ()
+  init(connection: Connection, send: String, completion: @escaping (String)->()) {
+    self.send = send
+    self.completion = completion
+    super.init(connection: connection)
+    add(SendOperation(data: send))
+    add(ReadOperation(completion: completion))
+  }
+}
+
 class SendOperation: NetworkOperation {
   let data: String
   init(data: String) {
