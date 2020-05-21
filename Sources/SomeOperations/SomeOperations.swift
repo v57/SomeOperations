@@ -8,9 +8,7 @@
 class SomeOperations: SomeOperation {
   var operations: [SomeOperation] = []
   override func run(completion: @escaping (Status, Action) -> ()) {
-    state = .running
     let queue = Queue(operations: operations) { [unowned self] queue, status, action in
-      self.state = .completed
       self.queues.remove(queue)
       completion(status, action)
     }

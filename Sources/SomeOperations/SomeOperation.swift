@@ -28,7 +28,6 @@ class SomeOperation {
   var state: State = .idle
   var queues = Set<Queue>()
   func run(completion: @escaping (Status, Action)->()) {
-    state = .completed
     completion(.done, .next)
   }
   class Queue: Hashable {
