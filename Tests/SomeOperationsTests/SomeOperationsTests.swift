@@ -108,12 +108,49 @@ final class SomeOperationsTests: XCTestCase {
     semaphone.wait()
     XCTAssertEqual(result, 13)
   }
+  enum FailedError: Error {
+    case some
+  }
+  func testAsyncRecursiveFailedOperations() {
+    var result = 0
+    let semaphone = DispatchSemaphore(value: 0)
+    let queue = "testAsyncRecursiveOperations".queue
+    let operations = SomeOperations()
+    operations.add(.async(on: queue) {
+      result += 1
+    })
+    XCTAssertEqual(result, 0)
+    operations.add(.async(on: queue) {
+      result += 1
+    })
+    for _ in 0..<10 {
+      let ops = SomeOperations()
+      operations.add(.asyncWithResult(on: queue) {
+        result += 1 // +10
+        return (.failed(FailedError.some), .next)
+      })
+      operations.add(ops)
+    }
+    XCTAssertEqual(result, 0)
+    operations.add(.async(on: queue) {
+      result += 1
+    })
+    XCTAssertEqual(result, 0)
+    operations.run { status, action in
+      XCTAssertEqual(status, .failed(FailedError.some))
+      XCTAssertEqual(action, .next)
+      semaphone.signal()
+    }
+    semaphone.wait()
+    XCTAssertEqual(result, 3)
+  }
   
   static var allTests = [
     ("testSyncOperation", testSyncOperation),
     ("testSyncOperations", testSyncOperations),
     ("testAsyncOperation", testAsyncOperation),
     ("testAsyncRecursiveOperations", testAsyncRecursiveOperations),
+    ("testAsyncRecursiveFailedOperations", testAsyncRecursiveFailedOperations),
   ]
 }
 
