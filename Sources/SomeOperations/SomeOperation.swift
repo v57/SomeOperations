@@ -6,24 +6,14 @@
 //
 
 class SomeOperation {
-  enum Status: Equatable {
-    case done, failed(Error)
-    static func ==(l: Status, r: Status) -> Bool {
-      switch (l,r) {
-      case (.done, .done):
-        return true
-      case let (.failed(error1), .failed(error2)):
-        return "\(error1)" == "\(error2)"
-      default:
-        return false
-      }
-    }
+  enum Status {
+    case done, failed(Error), cancelled
   }
   enum Action {
     case next
   }
   enum State {
-    case idle, running, completed
+    case idle, running, done(Status)
   }
   var state: State = .idle
   var queues = Set<Queue>()
@@ -68,6 +58,47 @@ class SomeOperation {
     }
     static func ==(l: Queue, r: Queue) -> Bool {
       return l === r
+    }
+  }
+}
+
+extension SomeOperation.Status: Equatable {
+  static func ==(l: SomeOperation.Status, r: SomeOperation.Status) -> Bool {
+    switch (l,r) {
+    case (.done, .done), (.cancelled, .cancelled):
+      return true
+    case let (.failed(error1), .failed(error2)):
+      return "\(error1)" == "\(error2)"
+    default:
+      return false
+    }
+  }
+}
+extension SomeOperation.State: Equatable {
+  static func ==(l: SomeOperation.State, r: SomeOperation.State) -> Bool {
+    switch (l,r) {
+    case (.idle, .idle), (.running, .running):
+      return true
+    case let (.done(status1), .done(status2)):
+      return status1 == status2
+    default:
+      return false
+    }
+  }
+  var isRunning: Bool {
+    switch self {
+    case .running:
+      return true
+    default:
+      return false
+    }
+  }
+  var isDone: Bool {
+    switch self {
+    case .done:
+      return true
+    default:
+      return false
     }
   }
 }
