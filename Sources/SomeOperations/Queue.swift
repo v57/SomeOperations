@@ -66,6 +66,9 @@ class Operation {
   func run() {
     
   }
+  func cancel() {
+    
+  }
 }
 
 /*
