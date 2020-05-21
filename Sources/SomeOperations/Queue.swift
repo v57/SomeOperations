@@ -92,10 +92,11 @@ class SomeOperation {
     return queue
   }
   func run() {
-    
+    queue.next()
   }
   func cancel() {
-    
+    queue?.reset()
+    queue?.cancel()
   }
   func pause() {
     queue?.pause()
