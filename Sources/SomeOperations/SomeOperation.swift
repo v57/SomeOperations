@@ -57,7 +57,6 @@ class SomeOperation {
           index += 1
           next()
         }
-        next()
       case .failed:
         done(status: status, action: action)
       }
