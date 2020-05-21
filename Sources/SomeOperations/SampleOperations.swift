@@ -9,6 +9,9 @@ import Foundation
 
 extension SomeOperation {
   static var defaultQueue: DispatchQueue = .main
+  static func runWithResult(_ run: @escaping ()->(Status, Action)) -> SomeOperation {
+    Run(run: run)
+  }
   static func async(on queue: DispatchQueue = defaultQueue, run: @escaping ()->()) -> SomeOperation {
     asyncWithResult(run: defaultResult(for: run))
   }
