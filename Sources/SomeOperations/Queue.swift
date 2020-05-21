@@ -48,9 +48,13 @@ class Queue: Operation {
     resume()
   }
 }
+typealias QueueCompletion = ()->()
+class CompletionQueue: Queue {
+  let completion: QueueCompletion
+  init(completion: @escaping QueueCompletion) {
+    self.completion = completion
   }
-  func hash(into hasher: inout Hasher) {
-    ObjectIdentifier(self).hash(into: &hasher)
+}
 class Operation {
   weak var queue: Queue!
   func run(completion: @escaping QueueCompletion) -> CompletionQueue {
