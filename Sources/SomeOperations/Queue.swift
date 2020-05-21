@@ -34,6 +34,10 @@ class Queue: Operation {
   func reset() {
     index = 0
   }
+  func clear() {
+    operations.removeAll()
+    index = 0
+  }
   func done() {
     queue?.next()
   }
