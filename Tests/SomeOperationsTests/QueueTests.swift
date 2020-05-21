@@ -198,11 +198,3 @@ final class QueueTests: XCTestCase {
   ]
 }
 
-
-func XCTAssertErrorEqual(_ error: Error?, _ error2: Error, _ message: @autoclosure () -> String = "", file: StaticString = #file, line: UInt = #line) {
-  if let error = error {
-    XCTAssertEqual("\(error)", "\(error2)", message(), file: file, line: line)
-  } else {
-    XCTAssert(false, "Error not found", file: file, line: line)
-  }
-}
