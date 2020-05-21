@@ -9,8 +9,18 @@ import Foundation
 
 extension SomeOperation {
   static var defaultQueue: DispatchQueue = .main
+  static func async(on queue: DispatchQueue = defaultQueue, run: @escaping ()->()) -> SomeOperation {
+    asyncWithResult(run: defaultResult(for: run))
+  }
   static func asyncWithResult(on queue: DispatchQueue = defaultQueue, run: @escaping ()->(Status, Action)) -> SomeOperation {
     RunAsync(queue: queue, run: run)
+  }
+  private static func defaultResult(for action: @escaping ()->()) -> ()->(Status, Action) {
+    let result: ()->(Status, Action) = {
+      action()
+      return (.done, .next)
+    }
+    return result
   }
 }
 
