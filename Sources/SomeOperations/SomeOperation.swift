@@ -15,64 +15,12 @@ class SomeOperation {
   enum State {
     case idle, running, done(Status)
   }
-  var queues = Set<Queue>()
+  var queues = Set<SomeOperationQueue>()
   func run(completion: @escaping (Status, Action)->()) {
     completion(.done, .next)
   }
   func cancel() {
     queues.forEach { $0.cancel() }
-  }
-  class Queue: Hashable {
-    var index = 0
-    let operations: [SomeOperation]
-    let completion: (Queue, Status, Action) -> ()
-    var state: State = .idle
-    var current: SomeOperation? {
-      index < operations.count ? operations[index] : nil
-    }
-    init(operations: [SomeOperation], completion: @escaping (Queue, Status, Action) -> ()) {
-      self.operations = operations
-      self.completion = completion
-    }
-    func cancel() {
-      state = .done(.cancelled)
-      current?.cancel()
-      done(status: .cancelled, action: .next)
-    }
-    func resume() {
-      state = .running
-      next()
-    }
-    func next() {
-      guard index < operations.count else {
-        done(status: .done, action: .next)
-        return
-      }
-      guard state != .done(.cancelled) else { return }
-      operations[index].run(completion: process)
-    }
-    func process(status: Status, action: Action) {
-      guard state.isRunning else { return }
-      switch status {
-      case .done:
-        switch action {
-        case .next:
-          index += 1
-          next()
-        }
-      default:
-        done(status: status, action: action)
-      }
-    }
-    func done(status: Status, action: Action) {
-      completion(self, status, action)
-    }
-    func hash(into hasher: inout Hasher) {
-      ObjectIdentifier(self).hash(into: &hasher)
-    }
-    static func ==(l: Queue, r: Queue) -> Bool {
-      return l === r
-    }
   }
 }
 
