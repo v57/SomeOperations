@@ -6,8 +6,18 @@
 //
 
 class SomeOperation {
-  enum Status {
+  enum Status: Equatable {
     case done, failed(Error)
+    static func ==(l: Status, r: Status) -> Bool {
+      switch (l,r) {
+      case (.done, .done):
+        return true
+      case let (.failed(error1), .failed(error2)):
+        return "\(error1)" == "\(error2)"
+      default:
+        return false
+      }
+    }
   }
   enum Action {
     case next
