@@ -7,41 +7,41 @@
 
 import Swift
 
-typealias QueueCompletion = (Error?)->()
-class CompletionQueue: SomeOperationQueue {
-  let completion: QueueCompletion
-  init(completion: @escaping QueueCompletion) {
+public typealias QueueCompletion = (Error?)->()
+open class CompletionQueue: SomeOperationQueue {
+  public let completion: QueueCompletion
+  public init(completion: @escaping QueueCompletion) {
     self.completion = completion
   }
-  override func cancel() {
+  open override func cancel() {
     completion(nil)
   }
-  override func done() {
+  open override func done() {
     completion(nil)
   }
-  override func failed(error: Error) {
+  open override func failed(error: Error) {
     completion(error)
   }
 }
-class SomeOperation {
-  weak var queue: SomeOperationQueue!
-  var totalOperations: Int { 1 }
-  func run(completion: @escaping QueueCompletion) -> CompletionQueue {
+open class SomeOperation {
+  open weak var queue: SomeOperationQueue!
+  open var totalOperations: Int { 1 }
+  open func run(completion: @escaping QueueCompletion) -> CompletionQueue {
     let queue = CompletionQueue(completion: completion)
     queue.add(self)
     return queue
   }
-  func run() {
+  open func run() {
     queue.next()
   }
-  func cancel() {
+  open func cancel() {
     queue?.reset()
     queue?.cancel()
   }
-  func pause() {
+  open func pause() {
     queue?.pause()
   }
-  func failed(error: Error) {
+  open func failed(error: Error) {
     queue?.failed(error: error)
   }
 }

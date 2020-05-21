@@ -7,23 +7,23 @@
 
 import Swift
 
-class SomeOperationQueue: SomeOperation {
-  var index: Int = 0
-  var operations = [SomeOperation]()
-  var removeCompletedOperations = false
-  override var totalOperations: Int {
+open class SomeOperationQueue: SomeOperation {
+  open var index: Int = 0
+  open var operations = [SomeOperation]()
+  open var removeCompletedOperations = false
+  open override var totalOperations: Int {
     operations.reduce(0, { $0 + $1.totalOperations })
   }
-  var current: SomeOperation? {
+  open var current: SomeOperation? {
     index < operations.count ? operations[index] : nil
   }
-  override func run() {
+  open override func run() {
     resume()
   }
-  func add(_ operation: SomeOperation) {
+  open func add(_ operation: SomeOperation) {
     self.operations.append(operation)
   }
-  func resume() {
+  open func resume() {
     if removeCompletedOperations {
       if index > 0 {
         operations.removeSubrange(0..<index)
@@ -37,32 +37,32 @@ class SomeOperationQueue: SomeOperation {
       done()
     }
   }
-  func reset() {
+  open func reset() {
     index = 0
   }
-  func clear() {
+  open func clear() {
     operations.removeAll()
     index = 0
   }
-  func done() {
+  open func done() {
     queue?.next()
   }
-  func removeCurrent() {
+  open func removeCurrent() {
     operations.remove(at: index)
   }
-  func insert(_ operations: SomeOperation..., at index: Int, updateIndex: Bool = false) {
+  open func insert(_ operations: SomeOperation..., at index: Int, updateIndex: Bool = false) {
     if updateIndex && self.index >= index {
       self.index += operations.count
     }
     insert(operations, at: index)
   }
-  func insert(_ operations: [SomeOperation], at index: Int, updateIndex: Bool = false) {
+  open func insert(_ operations: [SomeOperation], at index: Int, updateIndex: Bool = false) {
     self.operations.insert(contentsOf: operations, at: index)
   }
-  func retry() {
+  open func retry() {
     resume()
   }
-  func next() {
+  open func next() {
     index += 1
     resume()
   }
