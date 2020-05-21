@@ -24,11 +24,13 @@ class SomeOperation {
     var index = 0
     let operations: [SomeOperation]
     let completion: (Queue, Status, Action) -> ()
+    var state: State = .idle
     init(operations: [SomeOperation], completion: @escaping (Queue, Status, Action) -> ()) {
       self.operations = operations
       self.completion = completion
     }
     func resume() {
+      state = .running
       next()
     }
     func next() {
@@ -39,6 +41,7 @@ class SomeOperation {
       operations[index].run(completion: process)
     }
     func process(status: Status, action: Action) {
+      guard state.isRunning else { return }
       switch status {
       case .done:
         switch action {
@@ -46,7 +49,7 @@ class SomeOperation {
           index += 1
           next()
         }
-      case .failed:
+      default:
         done(status: status, action: action)
       }
     }
