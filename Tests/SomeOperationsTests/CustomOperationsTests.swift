@@ -12,10 +12,20 @@ final class CustomOperationsTests: XCTestCase {
     XCTAssertTrue(connection.isConnected)
     XCTAssertEqual(connection.operationsCalled, 1)
   }
+  func testConnectFailedOperation() {
+    let connection = Connection()
+    let network = NetworkQueue(connection: connection)
+    network.add(ConnectFailedOperation())
+    network.runWait { error in
+      XCTAssertErrorEqual(error, ConnectionError.lostConnection)
+    }.resume()
+    XCTAssertFalse(connection.isConnected)
+    XCTAssertEqual(connection.operationsCalled, 1)
   }
   
   static var allTests = [
     ("testConnectOperation", testConnectOperation),
+    ("testConnectFailedOperation", testConnectFailedOperation),
   ]
 }
 
