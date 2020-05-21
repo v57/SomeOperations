@@ -7,20 +7,20 @@
 
 import Foundation
 
-class Queue: Operation {
+class Queue: SomeOperation {
   var index: Int = 0
-  var operations = [Operation]()
+  var operations = [SomeOperation]()
   var removeCompletedOperations = false
   override var totalOperations: Int {
     operations.reduce(0, { $0 + $1.totalOperations })
   }
-  var current: Operation? {
+  var current: SomeOperation? {
     index < operations.count ? operations[index] : nil
   }
   override func run() {
     resume()
   }
-  func add(_ operation: Operation) {
+  func add(_ operation: SomeOperation) {
     self.operations.append(operation)
   }
   func resume() {
@@ -47,13 +47,13 @@ class Queue: Operation {
   func done() {
     queue?.next()
   }
-  func insert(_ operations: Operation..., at index: Int, updateIndex: Bool = false) {
+  func insert(_ operations: SomeOperation..., at index: Int, updateIndex: Bool = false) {
     if updateIndex && self.index >= index {
       self.index += operations.count
     }
     insert(operations, at: index)
   }
-  func insert(_ operations: [Operation], at index: Int, updateIndex: Bool = false) {
+  func insert(_ operations: [SomeOperation], at index: Int, updateIndex: Bool = false) {
     self.operations.insert(contentsOf: operations, at: index)
   }
   func retry() {
@@ -71,7 +71,7 @@ class CompletionQueue: Queue {
     self.completion = completion
   }
 }
-class Operation {
+class SomeOperation {
   weak var queue: Queue!
   var totalOperations: Int { 1 }
   func run(completion: @escaping QueueCompletion) -> CompletionQueue {
@@ -84,6 +84,9 @@ class Operation {
   }
   func cancel() {
     
+  }
+  func pause() {
+    queue?.pause()
   }
   func failed(error: Error) {
     queue?.failed(error: error)

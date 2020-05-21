@@ -7,24 +7,24 @@
 
 import Foundation
 
-extension Operation {
+extension SomeOperation {
   static var defaultQueue: DispatchQueue = .main
-  static func run(_ run: @escaping ()->()) -> Operation {
+  static func run(_ run: @escaping ()->()) -> SomeOperation {
     runWithResult(defaultResult(for: run))
   }
-  static func runWithResult(_ run: @escaping (Queue)->()) -> Operation {
+  static func runWithResult(_ run: @escaping (Queue)->()) -> SomeOperation {
     Run(run: run)
   }
-  static func async(on queue: DispatchQueue = defaultQueue, run: @escaping ()->()) -> Operation {
+  static func async(on queue: DispatchQueue = defaultQueue, run: @escaping ()->()) -> SomeOperation {
     asyncWithResult(on: queue, run: defaultResult(for: run))
   }
-  static func asyncWithResult(on queue: DispatchQueue = defaultQueue, run: @escaping (Queue)->()) -> Operation {
+  static func asyncWithResult(on queue: DispatchQueue = defaultQueue, run: @escaping (Queue)->()) -> SomeOperation {
     RunAsync(queue: queue, run: run)
   }
-  static func wait(_ time: TimeInterval, on queue: DispatchQueue = defaultQueue, run: @escaping ()->()) -> Operation {
+  static func wait(_ time: TimeInterval, on queue: DispatchQueue = defaultQueue, run: @escaping ()->()) -> SomeOperation {
     waitWithResult(time, on: queue, run: defaultResult(for: run))
   }
-  static func waitWithResult(_ time: TimeInterval, on queue: DispatchQueue = defaultQueue, run: @escaping (Queue)->()) -> Operation {
+  static func waitWithResult(_ time: TimeInterval, on queue: DispatchQueue = defaultQueue, run: @escaping (Queue)->()) -> SomeOperation {
     RunWait(time: time, queue: queue, run: run)
   }
   private static func defaultResult(for action: @escaping ()->()) -> (Queue)->() {
@@ -36,8 +36,8 @@ extension Operation {
   }
 }
 
-extension Operation {
-  class RunAsync: Operation {
+extension SomeOperation {
+  class RunAsync: SomeOperation {
     let dispatchQueue: DispatchQueue
     let action: (Queue)->()
     init(queue: DispatchQueue, run: @escaping (Queue)->()) {
@@ -50,7 +50,7 @@ extension Operation {
       }
     }
   }
-  class RunWait: Operation {
+  class RunWait: SomeOperation {
     let time: TimeInterval
     let dispatchQueue: DispatchQueue
     let action: (Queue)->()
@@ -76,7 +76,7 @@ extension Operation {
       isCancelled = false
     }
   }
-  class Run: Operation {
+  class Run: SomeOperation {
     let action: (Queue)->()
     init(run: @escaping (Queue)->()) {
       self.action = run

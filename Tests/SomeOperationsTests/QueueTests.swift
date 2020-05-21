@@ -4,7 +4,7 @@ import XCTest
 final class QueueTests: XCTestCase {
   func testSyncOperation() {
     var result = 0
-    let operation = Operation.run {
+    let operation = SomeOperation.run {
       result = 1
     }
     XCTAssertEqual(result, 0)
@@ -39,7 +39,7 @@ final class QueueTests: XCTestCase {
     var result = 0
     let semaphone = DispatchSemaphore(value: 0)
     let queue = "testAsyncOperation".queue
-    let operation = Operation.async(on: queue) {
+    let operation = SomeOperation.async(on: queue) {
       result = 1
     }
     XCTAssertEqual(result, 0)
