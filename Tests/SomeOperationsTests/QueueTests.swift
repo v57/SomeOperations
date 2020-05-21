@@ -29,10 +29,9 @@ final class QueueTests: XCTestCase {
       result = 3
     })
     XCTAssertEqual(result, 0)
-    let resultQueue = queue.run { error in
+    queue.runWait { error in
       XCTAssertNil(error)
-    }
-    resultQueue.resume()
+    }.resume()
     XCTAssertEqual(result, 3)
   }
   func testAsyncOperation() {
