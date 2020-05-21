@@ -102,13 +102,13 @@ class NetworkOperation: SomeOperation {
 
 class Request: NetworkQueue {
   let send: String
-  let completion: (String) -> ()
-  init(connection: Connection, send: String, completion: @escaping (String)->()) {
+  let response: (String) -> ()
+  init(connection: Connection, send: String, response: @escaping (String)->()) {
     self.send = send
-    self.completion = completion
+    self.response = response
     super.init(connection: connection)
     add(SendOperation(data: send))
-    add(ReadOperation(completion: completion))
+    add(ReadOperation(response: response))
   }
 }
 
@@ -136,16 +136,16 @@ class SendOperation: NetworkOperation {
 }
 
 class ReadOperation: NetworkOperation {
-  let completion: (String)->()
-  init(completion: @escaping (String)->()) {
-    self.completion = completion
+  let response: (String)->()
+  init(response: @escaping (String)->()) {
+    self.response = response
   }
   override func run() {
     if connection.isConnected {
       connection.read { result in
         switch result {
         case .success(let data):
-          self.completion(data)
+          self.response(data)
           self.queue.next()
         case .failure(let error):
           self.queue.failed(error: error)
