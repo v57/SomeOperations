@@ -89,5 +89,22 @@ class ConnectOperation: NetworkOperation {
   }
 }
 
+class ConnectFailedOperation: NetworkOperation {
+  override func run() {
+    if connection.isConnected {
+      self.queue.removeCurrent()
+      self.queue.retry()
+    } else {
+      connection.connectFailed { result in
+        self.queue.removeCurrent()
+        switch result {
+        case .success:
+          self.queue.retry()
+        case .failure(let error):
+          self.queue.failed(error: error)
+        }
+      }
+    }
+  }
 }
 
