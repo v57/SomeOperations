@@ -47,6 +47,9 @@ class Queue: SomeOperation {
   func done() {
     queue?.next()
   }
+  func removeCurrent() {
+    operations.remove(at: index)
+  }
   func insert(_ operations: SomeOperation..., at index: Int, updateIndex: Bool = false) {
     if updateIndex && self.index >= index {
       self.index += operations.count
