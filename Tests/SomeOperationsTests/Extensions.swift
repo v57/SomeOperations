@@ -24,7 +24,7 @@ extension String {
 }
 
 struct SyncQueue {
-  let queue: Queue
+  let queue: SomeOperationQueue
   let semaphore: DispatchSemaphore
   func resume() {
     queue.resume()
@@ -34,7 +34,7 @@ struct SyncQueue {
 extension SomeOperation {
   func runWait(_ completion: @escaping QueueCompletion) -> SyncQueue {
     let semaphore = DispatchSemaphore(value: 0)
-    var queue: Queue!
+    var queue: SomeOperationQueue!
     queue = run { error in
       completion(error)
       semaphore.signal()

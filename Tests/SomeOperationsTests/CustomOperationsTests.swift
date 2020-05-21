@@ -122,7 +122,7 @@ class Connection {
     }
   }
 }
-class NetworkQueue: Queue {
+class NetworkQueue: SomeOperationQueue {
   var connection: Connection
   init(connection: Connection) {
     self.connection = connection

@@ -16,7 +16,7 @@ final class QueueTests: XCTestCase {
   }
   func testSyncOperations() {
     var result = 0
-    let queue = Queue()
+    let queue = SomeOperationQueue()
     queue.add(.run {
       result = 1
     })
@@ -54,7 +54,7 @@ final class QueueTests: XCTestCase {
     var result = 0
     let semaphone = DispatchSemaphore(value: 0)
     let queue = "testAsyncOperations".queue
-    let operations = Queue()
+    let operations = SomeOperationQueue()
     operations.add(.async(on: queue) {
       result = 1
     })
@@ -79,7 +79,7 @@ final class QueueTests: XCTestCase {
     var result = 0
     let semaphone = DispatchSemaphore(value: 0)
     let queue = "testAsyncRecursiveOperations".queue
-    let operations = Queue()
+    let operations = SomeOperationQueue()
     operations.add(.async(on: queue) {
       result += 1
     })
@@ -88,7 +88,7 @@ final class QueueTests: XCTestCase {
       result += 1
     })
     for _ in 0..<10 {
-      let ops = Queue()
+      let ops = SomeOperationQueue()
       operations.add(.async(on: queue) {
         result += 1 // +10
       })
@@ -114,7 +114,7 @@ final class QueueTests: XCTestCase {
     var result = 0
     let semaphone = DispatchSemaphore(value: 0)
     let queue = "testAsyncRecursiveOperations".queue
-    let operations = Queue()
+    let operations = SomeOperationQueue()
     operations.add(.async(on: queue) {
       result += 1
     })
@@ -123,7 +123,7 @@ final class QueueTests: XCTestCase {
       result += 1
     })
     for _ in 0..<10 {
-      let ops = Queue()
+      let ops = SomeOperationQueue()
       operations.add(.asyncWithResult(on: queue) { queue in
         result += 1 // +10
         queue.failed(error: FailedError.some)
@@ -148,7 +148,7 @@ final class QueueTests: XCTestCase {
     let semaphone = DispatchSemaphore(value: 0)
     let operationSemaphore = DispatchSemaphore(value: 0)
     let queue = "testAsyncRecursiveCancelledOperations".queue
-    let operations = Queue()
+    let operations = SomeOperationQueue()
     operations.add(.async(on: queue) {
       result += 1
     })
@@ -157,7 +157,7 @@ final class QueueTests: XCTestCase {
       result += 1
     })
     for _ in 0..<10 {
-      let ops = Queue()
+      let ops = SomeOperationQueue()
       operations.add(.async(on: queue) {
         result += 1 // +10
         operationSemaphore.signal()
