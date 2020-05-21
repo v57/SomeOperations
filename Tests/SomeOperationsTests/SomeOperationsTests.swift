@@ -144,6 +144,49 @@ final class SomeOperationsTests: XCTestCase {
     semaphone.wait()
     XCTAssertEqual(result, 3)
   }
+  func testAsyncRecursiveCancelledOperations() {
+    var result = 0
+    let semaphone = DispatchSemaphore(value: 0)
+    let operationSemaphore = DispatchSemaphore(value: 0)
+    let queue = "testAsyncRecursiveCancelledOperations".queue
+    let operations = SomeOperations()
+    operations.add(.async(on: queue) {
+      result += 1
+    })
+    XCTAssertEqual(result, 0)
+    operations.add(.async(on: queue) {
+      result += 1
+    })
+    for _ in 0..<10 {
+      let ops = SomeOperations()
+      operations.add(.async(on: queue) {
+        result += 1 // +10
+        operationSemaphore.signal()
+      })
+      operations.add(.wait(1.0) {
+        result += 1 // +10
+      })
+      operations.add(.asyncWithResult(on: queue) {
+        result += 1 // +10
+        return (.failed(FailedError.some), .next)
+      })
+      operations.add(ops)
+    }
+    XCTAssertEqual(result, 0)
+    operations.add(.async(on: queue) {
+      result += 1
+    })
+    XCTAssertEqual(result, 0)
+    operations.run { status, action in
+      XCTAssertEqual(status, .cancelled)
+      XCTAssertEqual(action, .next)
+      semaphone.signal()
+    }
+    operationSemaphore.wait()
+    operations.cancel()
+    semaphone.wait()
+    XCTAssertEqual(result, 3)
+  }
   
   static var allTests = [
     ("testSyncOperation", testSyncOperation),
@@ -151,6 +194,7 @@ final class SomeOperationsTests: XCTestCase {
     ("testAsyncOperation", testAsyncOperation),
     ("testAsyncRecursiveOperations", testAsyncRecursiveOperations),
     ("testAsyncRecursiveFailedOperations", testAsyncRecursiveFailedOperations),
+    ("testAsyncRecursiveCancelledOperations", testAsyncRecursiveCancelledOperations),
   ]
 }
 
