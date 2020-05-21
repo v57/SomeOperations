@@ -99,6 +99,29 @@ class NetworkOperation: SomeOperation {
   }
   var connection: Connection { networkQueue.connection }
 }
+class SendOperation: NetworkOperation {
+  let data: String
+  init(data: String) {
+    self.data = data
+  }
+  override func run() {
+    if connection.isConnected {
+      connection.send(data) { result in
+        switch result {
+        case .success:
+          self.queue.next()
+        case .failure(let error):
+          self.queue.failed(error: error)
+        }
+      }
+    } else {
+      networkQueue.insert(ConnectOperation(), at: 0)
+      networkQueue.reset()
+      networkQueue.retry()
+    }
+  }
+}
+
 class ReadOperation: NetworkOperation {
   let completion: (String)->()
   init(completion: @escaping (String)->()) {
