@@ -17,4 +17,7 @@ class SomeOperations: SomeOperation {
     queues.insert(queue)
     queue.resume()
   }
+  func add(_ operation: SomeOperation) {
+    self.operations.append(operation)
+  }
 }
