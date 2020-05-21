@@ -67,3 +67,29 @@ class Operation {
     
   }
 }
+
+/*
+ let queue = SomeOperationQueue()
+ queue.removeCompletedOperations = true
+ queue.add { queue in
+  doSome()
+ }
+ queue.add {
+  if isConnected {
+    run { result in
+      if result.isLostConnection {
+        queue.reset()
+      }
+    }
+  } else {
+    queue.insert(ConnectOperation(), at: queue.index)
+    queue.retry()
+  }
+ }
+ 
+ // ConnectOperation {
+   if isConnected {
+    queue.removeCurrent()
+    queue.retry()
+  }
+ */
