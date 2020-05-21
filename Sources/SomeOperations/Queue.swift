@@ -18,6 +18,12 @@ class Queue: Operation {
     resume()
   }
   func resume() {
+    if removeCompletedOperations {
+      if index > 0 {
+        operations.removeSubrange(0..<index)
+        index = 0
+      }
+    }
     if let current = current {
       current.queue = self
       current.run()
