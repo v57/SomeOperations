@@ -20,6 +20,15 @@ import Foundation
   }
   func hash(into hasher: inout Hasher) {
     ObjectIdentifier(self).hash(into: &hasher)
+class Operation {
+  weak var queue: Queue!
+  func run(completion: @escaping QueueCompletion) -> CompletionQueue {
+    let queue = CompletionQueue(completion: completion)
+    self.queue = queue
+    run()
+    return queue
   }
+  func run() {
+    
   }
 }
