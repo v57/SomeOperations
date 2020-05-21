@@ -16,7 +16,7 @@ class SomeOperation {
     case idle, running, completed
   }
   var state: State = .idle
-  var queues = [Queue]()
+  var queues = Set<Queue>()
   func run(completion: @escaping (Status, Action)->()) {
     state = .completed
     completion(.done, .next)
