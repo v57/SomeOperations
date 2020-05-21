@@ -20,6 +20,9 @@ class Queue: Operation {
   override func run() {
     resume()
   }
+  func add(_ operation: Operation) {
+    self.operations.append(operation)
+  }
   func resume() {
     if removeCompletedOperations {
       if index > 0 {
@@ -73,8 +76,7 @@ class Operation {
   var totalOperations: Int { 1 }
   func run(completion: @escaping QueueCompletion) -> CompletionQueue {
     let queue = CompletionQueue(completion: completion)
-    self.queue = queue
-    run()
+    queue.add(self)
     return queue
   }
   func run() {
