@@ -37,6 +37,7 @@ class SomeOperation {
     func cancel() {
       state = .done(.cancelled)
       current?.cancel()
+      done(status: .cancelled, action: .next)
     }
     func resume() {
       state = .running
