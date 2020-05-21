@@ -38,7 +38,8 @@ final class SomeOperationsTests: XCTestCase {
   func testAsyncOperation() {
     var result = 0
     let semaphone = DispatchSemaphore(value: 0)
-    let operation = SomeOperation.async(on: "testAsyncOperation".queue) {
+    let queue = "testAsyncOperation".queue
+    let operation = SomeOperation.async(on: queue) {
       result = 1
       semaphone.signal()
     }
@@ -49,6 +50,31 @@ final class SomeOperationsTests: XCTestCase {
     }
     semaphone.wait()
     XCTAssertEqual(result, 1)
+  }
+  func testAsyncOperations() {
+    var result = 0
+    let semaphone = DispatchSemaphore(value: 0)
+    let queue = "testAsyncOperations".queue
+    let operations = SomeOperations()
+    operations.add(.async(on: queue) {
+      result = 1
+    })
+    XCTAssertEqual(result, 0)
+    operations.add(.async(on: queue) {
+      result = 2
+    })
+    XCTAssertEqual(result, 0)
+    operations.add(.async(on: queue) {
+      result = 3
+    })
+    XCTAssertEqual(result, 0)
+    operations.run { status, action in
+      XCTAssertEqual(status, .done)
+      XCTAssertEqual(action, .next)
+      semaphone.signal()
+    }
+    semaphone.wait()
+    XCTAssertEqual(result, 3)
   }
   
   static var allTests = [
