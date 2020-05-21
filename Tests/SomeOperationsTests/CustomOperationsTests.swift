@@ -10,6 +10,8 @@ final class CustomOperationsTests: XCTestCase {
       XCTAssertNil(error)
     }.resume()
     XCTAssertTrue(connection.isConnected)
+    XCTAssertEqual(connection.operationsCalled, 1)
+  }
   }
   
   static var allTests = [
@@ -21,33 +23,39 @@ enum ConnectionError: Error {
   case lostConnection, noData
 }
 class Connection {
+  var operationsCalled = 0
   var isConnected = false
   var lastSent: String?
   func connect(_ completion: @escaping (Result<Void, ConnectionError>)->()) {
+    operationsCalled += 1
     "ConnectQueue".queue.asyncAfter(deadline: .now() + 0.1) {
       self.isConnected = true
       completion(.success(()))
     }
   }
   func connectFailed(_ completion: @escaping (Result<Void, ConnectionError>)->()) {
+    operationsCalled += 1
     "ConnectQueue".queue.asyncAfter(deadline: .now() + 0.1) {
       self.isConnected = false
       completion(.failure(.lostConnection))
     }
   }
   func send(_ some: String, completion: @escaping (Result<Void, ConnectionError>)->()) {
+    operationsCalled += 1
     "ConnectQueue".queue.asyncAfter(deadline: .now() + 0.1) {
       self.lastSent = some
       completion(.success(()))
     }
   }
   func sendFailed(_ some: String, completion: @escaping (Result<Void, ConnectionError>)->()) {
+    operationsCalled += 1
     "ConnectQueue".queue.asyncAfter(deadline: .now() + 0.1) {
       self.isConnected = false
       completion(.failure(.lostConnection))
     }
   }
   func read(_ completion: @escaping (Result<String, ConnectionError>)->()) {
+    operationsCalled += 1
     "ConnectQueue".queue.asyncAfter(deadline: .now() + 0.1) {
       if let lastSent = self.lastSent {
         self.lastSent = nil
@@ -58,6 +66,7 @@ class Connection {
     }
   }
   func readFailed(_ completion: @escaping (Result<String, ConnectionError>)->()) {
+    operationsCalled += 1
     "ConnectQueue".queue.asyncAfter(deadline: .now() + 0.1) {
       self.isConnected = false
       completion(.failure(.lostConnection))
