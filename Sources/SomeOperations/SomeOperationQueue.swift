@@ -38,7 +38,26 @@ open class SomeOperationQueue: SomeOperation {
   open override func run() {
     resume()
   }
+  open func overrideIfNeedeed(operation: SomeOperation) -> Bool {
+    switch operation.overrideMode {
+    case .none:
+      return true
+    case .weak:
+      if let existed = operations.first(where: { $0.overrideText == operation.overrideText }) {
+        existed.overriding(operation: operation)
+        return false
+      } else {
+        return true
+      }
+    case .strong:
+      operations.removeAll { existed in
+        existed.overrideText == operation.overrideText && existed !== current
+      }
+      return true
+    }
+  }
   open func addNext(_ operation: SomeOperation) {
+    guard overrideIfNeedeed(operation: operation) else { return }
     if isRunning {
       self.operations.insert(operation, at: index + 1)
     } else {
@@ -46,6 +65,7 @@ open class SomeOperationQueue: SomeOperation {
     }
   }
   open func add(_ operation: SomeOperation) {
+    guard overrideIfNeedeed(operation: operation) else { return }
     self.operations.append(operation)
   }
   open func resume() {

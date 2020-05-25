@@ -52,4 +52,8 @@ open class SomeOperation {
   open func failed(error: Error) {
     queue?.failed(error: error)
   }
+  
+  open func overriding(operation: SomeOperation) {
+    
+  }
 }
