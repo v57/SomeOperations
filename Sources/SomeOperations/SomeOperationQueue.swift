@@ -27,6 +27,7 @@ open class SomeOperationQueue: SomeOperation {
   open var index: Int = 0
   open var operations = [SomeOperation]()
   open var removeCompletedOperations = false
+  public var isRunning = false
   public var isEnabled = true
   open override var totalOperations: Int {
     operations.reduce(0, { $0 + $1.totalOperations })
@@ -42,6 +43,8 @@ open class SomeOperationQueue: SomeOperation {
   }
   open func resume() {
     guard isEnabled else { return }
+    guard !isRunning else { return }
+    isRunning = true
     if removeCompletedOperations {
       if index > 0 {
         operations.removeSubrange(0..<index)
@@ -63,7 +66,21 @@ open class SomeOperationQueue: SomeOperation {
     index = 0
   }
   open func done() {
+    isRunning = false
     queue?.next()
+  }
+  open override func cancel() {
+    isRunning = false
+    queue?.reset()
+    queue?.cancel()
+  }
+  open override func pause() {
+    isRunning = false
+    queue?.pause()
+  }
+  open override func failed(error: Error) {
+    isRunning = false
+    queue?.failed(error: error)
   }
   open func removeCurrent() {
     operations.remove(at: index)
@@ -78,9 +95,11 @@ open class SomeOperationQueue: SomeOperation {
     self.operations.insert(contentsOf: operations, at: index)
   }
   open func retry() {
+    isRunning = false
     resume()
   }
   open func next() {
+    isRunning = false
     index += 1
     resume()
   }
