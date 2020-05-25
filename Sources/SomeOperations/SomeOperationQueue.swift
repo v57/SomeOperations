@@ -1,6 +1,6 @@
 //
 //  SomeOperationQueue.swift
-//  
+//
 //
 //  Created by Dmitry Kozlov on 5/21/20.
 //
@@ -37,6 +37,13 @@ open class SomeOperationQueue: SomeOperation {
   }
   open override func run() {
     resume()
+  }
+  open func addNext(_ operation: SomeOperation) {
+    if isRunning {
+      self.operations.insert(operation, at: index + 1)
+    } else {
+      self.operations.insert(operation, at: index)
+    }
   }
   open func add(_ operation: SomeOperation) {
     self.operations.append(operation)
