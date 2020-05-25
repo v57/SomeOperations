@@ -23,10 +23,16 @@ open class CompletionQueue: SomeOperationQueue {
     completion(error)
   }
 }
+
+public enum OverrideMode {
+  case none, weak, strong
+}
 open class SomeOperation {
   open var name: String { String(describing: type(of: self)) }
   open weak var queue: SomeOperationQueue!
   open var totalOperations: Int { 1 }
+  open var overrideText: String { name }
+  open var overrideMode: OverrideMode { .none }
   public init() {}
   open func run(completion: @escaping QueueCompletion) -> CompletionQueue {
     let queue = CompletionQueue(completion: completion)
