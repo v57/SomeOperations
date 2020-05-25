@@ -1,6 +1,6 @@
 //
 //  SomeOperation.swift
-//  
+//
 //
 //  Created by Dmitry Kozlov on 5/21/20.
 //
@@ -24,6 +24,7 @@ open class CompletionQueue: SomeOperationQueue {
   }
 }
 open class SomeOperation {
+  open var name: String { className(self) }
   open weak var queue: SomeOperationQueue!
   open var totalOperations: Int { 1 }
   public init() {}

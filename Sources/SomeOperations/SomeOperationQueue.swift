@@ -8,6 +8,22 @@
 import Swift
 
 open class SomeOperationQueue: SomeOperation {
+  open var queueName: String { className(self) }
+  open override var name: String {
+    var name = queueName + "\n"
+    for (index, operation) in operations.enumerated() {
+      if self.index == index {
+        name += "-"
+      } else {
+        name += "."
+      }
+      name += operation.name.replacingOccurrences(of: "\n", with: "\n.") + "\n"
+    }
+    if operations.count > 0 {
+      name = name.removeLast(1)
+    }
+    return name
+  }
   open var index: Int = 0
   open var operations = [SomeOperation]()
   open var removeCompletedOperations = false
