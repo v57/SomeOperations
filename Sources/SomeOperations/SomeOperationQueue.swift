@@ -8,7 +8,7 @@
 import Swift
 
 open class SomeOperationQueue: SomeOperation {
-  open var queueName: String { className(self) }
+  open var queueName: String { String(describing: type(of: self)) }
   open override var name: String {
     var name = queueName + "\n"
     for (index, operation) in operations.enumerated() {
@@ -20,7 +20,7 @@ open class SomeOperationQueue: SomeOperation {
       name += operation.name.replacingOccurrences(of: "\n", with: "\n.") + "\n"
     }
     if operations.count > 0 {
-      name = name.removeLast(1)
+      name.removeLast()
     }
     return name
   }

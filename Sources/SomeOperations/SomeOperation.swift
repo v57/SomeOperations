@@ -24,7 +24,7 @@ open class CompletionQueue: SomeOperationQueue {
   }
 }
 open class SomeOperation {
-  open var name: String { className(self) }
+  open var name: String { String(describing: type(of: self)) }
   open weak var queue: SomeOperationQueue!
   open var totalOperations: Int { 1 }
   public init() {}
